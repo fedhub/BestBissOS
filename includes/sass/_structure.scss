@@ -15,13 +15,29 @@ html, body{
 }
 
 .wrapper{
-	width: 98%;
+	width: 99%;
 	height: 100%;
 	margin: $auto;
-	background-color: $bg-color;
 }
 
 header{
 	width: 100%;
-	height: 20%
+	height: 15%;
 }
+
+.main{
+	height: 75%;
+	width: 100%;
+}
+
+.hr{
+	border: 0;
+	height: 1px;
+	width: 100%;
+	background: #006400;
+	background-image: -webkit-linear-gradient(left, #ccc, #006400, #ccc);
+	background-image:    -moz-linear-gradient(left, #ccc, #006400, #ccc);
+	background-image:     -ms-linear-gradient(left, #ccc, #006400, #ccc);
+	background-image:      -o-linear-gradient(left, #ccc, #006400, #ccc);
+}
+
