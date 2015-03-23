@@ -102,7 +102,7 @@ nav li {
   border: solid 1px #006400;
   width: 48%;
   height: 40%;
-  background: url("http://localhost:3000/images/img.png") no-repeat;
+  background: url("http://best-biss.azurewebsites.net/images/img.png") no-repeat;
   background-size: contain;
   background-position: center center;
 }
@@ -133,7 +133,7 @@ nav li {
   vertical-align: middle;
   width: 23%;
   border: solid 1px #006400;
-  background: url("http://localhost:3000/images/img.png") no-repeat;
+  background: url("http://best-biss.azurewebsites.net/images/img.png") no-repeat;
   background-size: contain;
   background-position: center center;
 }
@@ -198,6 +198,12 @@ nav li {
   width: 100%;
   background-color: #97A778;
   margin-bottom: 5px;
+  display: table;
+}
+.set-container .set-title p {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
 }
 .set-container .items-container {
   width: 100%;
@@ -216,27 +222,47 @@ nav li {
   display: table;
 }
 .set-container .items-container .addition-item .item-header .information {
-  background-color: green;
   display: table-cell;
-  width: 80%;
+  width: 75%;
   height: 100%;
 }
 .set-container .items-container .addition-item .item-header .information .title {
   width: 100%;
-  height: 20%;
+  height: 30%;
+  display: table;
+}
+.set-container .items-container .addition-item .item-header .information .title p {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  font-size: 50%;
+  font-weight: bold;
 }
 .set-container .items-container .addition-item .item-header .information .description {
   width: 100%;
-  height: 80%;
+  height: 70%;
+  display: table;
+}
+.set-container .items-container .addition-item .item-header .information .description p {
+  display: table-cell;
+  vertical-align: middle;
+  font-size: 50%;
 }
 .set-container .items-container .addition-item .item-header .price {
-  background-color: purple;
   display: table-cell;
-  width: 20%;
+  vertical-align: middle;
+  text-align: center;
+  width: 25%;
   height: 100%;
+}
+.set-container .items-container .addition-item .item-header .price p {
+  font-size: 50%;
+  color: #8b0000;
 }
 .set-container .items-container .addition-item .item-image {
   height: 60%;
   width: 100%;
-  background-color: yellow;
+  background: url("http://localhost:3000/images/img.png") no-repeat;
+  background-size: contain;
+  background-position: center center;
 }
