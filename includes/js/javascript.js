@@ -1,44 +1,6 @@
 //var base_url = 'best-biss.azurewebsites.net';
 var base_url = 'localhost:3000';
 
-function myCart(){
-    this.food_items = function(new_food_item){
-        this.food_items.push(new_food_item);
-    };
-    this.total_price = total_price;
-    this.due_time = function(due_time){
-        this.due_time.push(due_time);
-    };
-}
-
-function foodItem(newItem){
-    this.id   = newItem.id;
-    this.name = newItem.name;
-    this.description = newItem.description;
-    this.price = newItem.price;
-    this.addition_sets = function(new_addition_set){
-        this.addition_sets.push(new_addition_set);
-    };
-}
-
-function additionsType(){
-    this.id = id;
-    this.name = name;
-    this.additions = function(new_addition){
-        this.additions.push(new_addition);
-    };
-}
-
-function additionItem(){
-    this.id   = id;
-    this.name = name;
-    this.description = description;
-    this.price = price;
-}
-
-
-
-
 $(document).ready(function(){
 
     get_logo();
@@ -171,10 +133,11 @@ function render_item_additions(e){
 
         for(var j = 0 in food_item.addition_types[i].items){
 
-            var addition_item = $('<section>', {class: 'addition-item'})
+            var addition_item = $('<section>', {class: 'addition-item', id: food_item.details.id+i+j})
                 .click({
                     additions_type_index: i,
-                    addition_item_index: j
+                    addition_item_index: j,
+                    food_item: food_item
                 }, event_handler);
 
 
@@ -213,94 +176,176 @@ function render_item_additions(e){
         arr[i] = [];
     }
 
-    function event_handler(e){
+    function event_handler(e) {
 
         var i = e.data.additions_type_index;
         var j = e.data.addition_item_index;
+        var selection_type = food_item.addition_types[i].details.selection_type;
+        var selections_amount = food_item.addition_types[i].details.selections_amount;
         var uncheck = false;
 
-        if(food_item.addition_types[i].details.selection_type == 'required_exact'){
+        if (selection_type == 'required_exact') {
 
-            console.log('here');
-
-            if(arr[i].length == 1){
+            if (arr[i].length == 1) {
                 arr[i] = [];
-                $('.addition-item').css('background-color', '#FFF');
+                $('.set-container:eq(' + i + ') .item-header').css('background-color', '#FFF');
             }
-            if(arr[i].length == 0) {
+            if (arr[i].length == 0) {
                 arr[i].push(j);
-                $(this).css('background-color', 'green');
+                $(this).find('.item-header').css('background-color', '#97A778');
             }
 
         }
 
-        if(food_item.addition_types[i].details.selection_type == 'required_min'){
+        if (selection_type == 'required_min' || (selection_type == 'optional_max' && arr[i].length <= selections_amount)) {
 
-        }
-
-        if(food_item.addition_types[i].details.selection_type == 'optional_max'){
-
-        }
-
-/*
-        // check if the addition item clicked by the user has already been chosen by him
-        for(var k = 0; k < arr[i].length; k++){
-            if(arr[i][k] == j){
-                arr[i].splice(k,1);
-                uncheck = true;
+            var k = 0;
+            if (arr[i].length > 0) {
+                for (k = 0; k < arr[i].length; k++) {
+                    if (arr[i][k] == j) {
+                        arr[i].splice(k, 1);
+                        uncheck = true;
+                        break;
+                    }
+                }
             }
-        }
-        if(!uncheck)
-            arr[i].push(j);
+            if (uncheck)
+                $(this).find('.item-header').css('background-color', '#FFF');
+            else {
+                if (!(selection_type == 'optional_max' && arr[i].length == selections_amount)) {
+                    arr[i].push(j);
+                    $(this).find('.item-header').css('background-color', '#97A778');
+                }
+                else
+                    alert('באפשרותך לבחור עד ' + selections_amount + ' פריטים מ- ' + food_item.addition_types[i].details.name);
+            }
 
-        console.log('set '+i+': '+arr[i].length+' selected');*/
+        }
 
     }
 
+    var approve_button = $('<section>', {class: 'approve-button', id: 'approve-meal'})
+        .click({
+            arr: arr,
+            food_item: food_item
+        }, approve_meal);
 
+    var approve_button_p = $('<p>', {text: 'המשך >>'});
+    approve_button.append(approve_button_p);
+    menu_additions_container.append(approve_button);
     $('.main').empty();
     $('.main').append(menu_additions_container);
 
 
 }
 
+function approve_meal(e){
 
-/*
- function myCart(){
- this.food_items = function(new_food_item){
- this.food_items.push(new_food_item);
- };
- this.total_price = total_price;
- this.due_time = function(due_time){
- this.due_time.push(due_time);
- };
- }
+    var arr = e.data.arr;
+    var food_item = e.data.food_item;
+    var msg = '';
+    var err = false;
 
- function foodItem(){
- this.id   = id;
- this.name = name;
- this.description = description;
- this.price = price;
- this.addition_sets = function(new_addition_set){
- this.addition_sets.push(new_addition_set);
- };
- }
+    for(var i = 0; i < food_item.addition_types.length; i++){
+        var selection_type = food_item.addition_types[i].details.selection_type;
+        var selections_amount = food_item.addition_types[i].details.selections_amount;
+        if(selection_type == 'required_min' && arr[i].length < selections_amount){
+            msg += '\n';
+            msg += 'עליך לבחור בדיוק ';
+            msg += selections_amount;
+            msg += ' פריטים מ- ';
+            msg += food_item.addition_types[i].details.name;
+            msg += ' על מנת להמשיך';
+            err = true;
+        }
+        if(selection_type == 'required_exact' && arr[i].length < selections_amount){
+            msg += '\n';
+            msg += 'עליך לבחור לפחות ';
+            msg += selections_amount;
+            msg += ' פריטים מ- ';
+            msg += food_item.addition_types[i].details.name;
+            msg += ' על מנת להמשיך';
+            err = true;
+        }
+    }
+    if(err)
+        alert(msg);
+    else
+        cart(food_item, arr);
 
- function additionsType(){
- this.id = id;
- this.name = name;
- this.additions = function(new_additions){
- this.additions.push(new_addition);
- }_
- }
+}
 
- function additionItem(){
- this.id   = id;
- this.name = name;
- this.description = description;
- this.price = price;
- }
-*/
+
+var my_cart = [];
+
+function foodItem(food_item, addition_types){
+    this.item = food_item;
+    this.addition_types = addition_types;
+}
+
+function additionsType(additions_type, addition_items){
+    this.type = additions_type;
+    this.items = addition_items;
+}
+
+function cart(food_item, arr){
+
+    var cart_addition_items = [];
+    var cart_addition_types = [];
+
+    for(var i = 0; i < arr.length; i++){
+
+        for(var j = 0; j < arr[i].length; j++){
+            cart_addition_items.push(food_item.addition_types[i].items[arr[i][j]].details);
+        }
+
+        var additions_type = new additionsType(food_item.addition_types[i].details, cart_addition_items);
+        cart_addition_items = [];
+        cart_addition_types.push(additions_type);
+
+    }
+
+    var cart_item = new foodItem(food_item.details, cart_addition_types);
+    my_cart.push(cart_item);
+    render_cart();
+
+}
+
+function render_cart(){
+
+    var cart_container = $('<section>', {class: 'cart-container'});
+
+    // for each item in cart
+    for(var i = 0; i < my_cart.length; i++){
+        var cart_item = $('<section>', {class: 'cart-item'});
+        cart_item.append(my_cart[i].item.name).append(' ' + my_cart[i].item.price).append($('<br>'));
+
+        // for each item in addition types
+        for(var j = 0; j < my_cart[i].addition_types.length; j++){
+            cart_item.append(my_cart[i].addition_types[j].type.name).append($('<br>'));
+
+            // for each item in addition items
+            for(var k = 0; k < my_cart[i].addition_types[j].items.length; k++){
+                cart_item.append(my_cart[i].addition_types[j].items[k].name + ' ' + my_cart[i].addition_types[j].items[k].price).append($('<br>'));
+
+            }
+        }
+        cart_container.append(cart_item);
+    }
+
+    $('.main').empty();
+    $('.main').append(cart_container);
+
+}
+
+
+
+
+
+
+
+
+
 
 
 
