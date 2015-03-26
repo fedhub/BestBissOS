@@ -5,6 +5,8 @@ html, body {
   width: 100%;
   height: 100%;
   direction: rtl;
+  position: absolute;
+  left: 0;
 }
 
 * {
@@ -43,9 +45,41 @@ header {
 /*/////////////////////////////////////////////*/
 /* HEADER */
 /*/////////////////////////////////////////////*/
-.logo {
-  width: 47%;
+.header-components {
+  width: 100%;
   height: 50%;
+  display: table;
+}
+.header-components .logo {
+  width: 40%;
+  height: 100%;
+  display: table-cell;
+}
+.header-components .title {
+  width: 50%;
+  height: 100%;
+  display: table-cell;
+}
+.header-components .title p {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+.header-components .hamburger-container {
+  width: 10%;
+  height: 100%;
+  display: table-cell;
+}
+.header-components .hamburger-container .hamburger {
+  width: 31px;
+  height: 31px;
+}
+.header-components .hamburger-container .hamburger .line {
+  width: 100%;
+  height: 23%;
+  margin-top: 4px;
+  border-radius: 100px;
+  background-color: #006400;
 }
 
 nav {
@@ -133,7 +167,7 @@ nav li {
   vertical-align: middle;
   width: 23%;
   border: solid 1px #006400;
-  background: url("http://best-biss.azurewebsites.net/images/img.png") no-repeat;
+  background: url("http://localhost:3000/images/img.png") no-repeat;
   background-size: contain;
   background-position: center center;
 }
@@ -277,7 +311,7 @@ nav li {
 .set-container .items-container .addition-item .item-image {
   height: 60%;
   width: 100%;
-  background: url("http://best-biss.azurewebsites.net/images/img.png") no-repeat;
+  background: url("http://localhost:3000/images/img.png") no-repeat;
   background-size: contain;
   background-position: center center;
 }
@@ -298,4 +332,19 @@ nav li {
   background-color: #97A778;
   border-radius: 5px;
   font-size: 12px;
+  margin-top: 5px;
+}
+
+/*/////////////////////////////////////////////*/
+/* MENU-ITEMS */
+/*/////////////////////////////////////////////*/
+.mobile-menu-container {
+  display: none;
+  width: 75%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: -75%;
+  background: #97a778;
+  box-shadow: inset -2px 0 2px rgba(0, 46, 2, 0.35);
 }

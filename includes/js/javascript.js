@@ -14,6 +14,61 @@ $(document).ready(function(){
             get_the_menu();
         }
 
+        if(this.id == 'cart'){
+            render_cart();
+        }
+
+    });
+
+    var check = 0;
+    $('.hamburger').click(function(){
+        check++;
+        if(check % 2 == 0) {
+            $('.mobile-menu-container').animate({left: '-75%'},{
+                easing: 'swing',
+                duration: 500,
+                complete: function(){
+                    $(this).css('display', 'none');
+                }
+            });
+            $('body').animate({left: '0'},{
+                easing: 'swing',
+                duration: 500
+            });
+            check = 0;
+            $('.hamburger').animate({rotation: 90},{
+                step: function () {
+                    $(this).css({'transform': 'rotate(0deg)', 'transition-duration': '0.5s'});
+                }
+            });
+        }
+        else {
+            $('.mobile-menu-container').show().animate({left: '0'},{
+                easing: 'swing',
+                duration: 500,
+                queue: false
+            });
+            $('body').animate({left: '75%'},{
+                easing: 'swing',
+                duration: 500,
+                queue: false
+            });
+            $('.hamburger').animate({rotation: 0},{
+                step: function () {
+                    $(this).css({'transform': 'rotate(90deg)', 'transition-duration': '0.5s'});
+                }
+            });
+
+        }
+
+
+
+        /*$('.mobile-menu-container').slideToggle(function(){
+            if($(this).is(":visible"))
+                $(this).animate({left : '0'},500);
+            else
+                $(this).animate({left : '-75%'},500);
+        });*/
     });
 
 
@@ -23,7 +78,8 @@ function get_logo(){
 
     $('.logo').css({
         'background': 'url("http://'+base_url+'/images/mobile_logo.png") no-repeat',
-        'background-size': 'contain'
+        'background-size': 'contain',
+        'background-position': 'center center'
     });
 
 }
@@ -276,7 +332,10 @@ function approve_meal(e){
 }
 
 
-var my_cart = [];
+var my_cart = {
+    cart_items: [],
+    total_price: 0
+};
 
 function foodItem(food_item, addition_types){
     this.item = food_item;
@@ -293,20 +352,24 @@ function cart(food_item, arr){
     var cart_addition_items = [];
     var cart_addition_types = [];
 
+    my_cart.total_price += food_item.details.price;
+
     for(var i = 0; i < arr.length; i++){
 
         for(var j = 0; j < arr[i].length; j++){
             cart_addition_items.push(food_item.addition_types[i].items[arr[i][j]].details);
+            my_cart.total_price += food_item.addition_types[i].items[arr[i][j]].details.price;
         }
 
         var additions_type = new additionsType(food_item.addition_types[i].details, cart_addition_items);
         cart_addition_items = [];
-        cart_addition_types.push(additions_type);
+        if(arr[i].length > 0)
+            cart_addition_types.push(additions_type);
 
     }
 
     var cart_item = new foodItem(food_item.details, cart_addition_types);
-    my_cart.push(cart_item);
+    my_cart.cart_items.push(cart_item);
     render_cart();
 
 }
@@ -316,24 +379,28 @@ function render_cart(){
     var cart_container = $('<section>', {class: 'cart-container'});
 
     // for each item in cart
-    for(var i = 0; i < my_cart.length; i++){
+    for(var i = 0; i < my_cart.cart_items.length; i++){
         var cart_item = $('<section>', {class: 'cart-item'});
-        cart_item.append(my_cart[i].item.name).append(' ' + my_cart[i].item.price).append($('<br>'));
+        cart_item.append(my_cart.cart_items[i].item.name).append(' ' + my_cart.cart_items[i].item.price).append($('<br>'));
 
         // for each item in addition types
-        for(var j = 0; j < my_cart[i].addition_types.length; j++){
-            cart_item.append(my_cart[i].addition_types[j].type.name).append($('<br>'));
+        for(var j = 0; j < my_cart.cart_items[i].addition_types.length; j++){
+            cart_item.append(my_cart.cart_items[i].addition_types[j].type.name).append($('<br>'));
 
             // for each item in addition items
-            for(var k = 0; k < my_cart[i].addition_types[j].items.length; k++){
-                cart_item.append(my_cart[i].addition_types[j].items[k].name + ' ' + my_cart[i].addition_types[j].items[k].price).append($('<br>'));
+            for(var k = 0; k < my_cart.cart_items[i].addition_types[j].items.length; k++){
+                cart_item.append(my_cart.cart_items[i].addition_types[j].items[k].name + ' ' + my_cart.cart_items[i].addition_types[j].items[k].price).append($('<br>'));
 
             }
         }
         cart_container.append(cart_item);
     }
 
+    cart_container.append(my_cart.total_price);
+
     $('.main').empty();
+    $('.skin section').css('background-color', '#FFF');
+    $('#cart-skin').css('background-color', 'green');
     $('.main').append(cart_container);
 
 }

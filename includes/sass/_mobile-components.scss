@@ -1,0 +1,14 @@
+/*/////////////////////////////////////////////*/
+				/* MENU-ITEMS */
+/*/////////////////////////////////////////////*/
+
+.mobile-menu-container {
+	display: none;
+	width: $mobile-menu-width;
+	height: 100%;
+	position: fixed;
+	top: 0;
+	left: -$mobile-menu-width;
+	background: rgba($bg-color, 1);
+	box-shadow: inset -2px 0 2px rgba($txt-color, .35);
+}
