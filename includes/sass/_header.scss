@@ -39,6 +39,20 @@
 				background-color: $green;
 			}
 
+			&.rotate-right{
+				transform: rotate(360deg);
+				-webkit-transform: rotate(360deg);
+			}
+			&.rotate-left{
+				transform: rotate(0deg);
+				-webkit-transform: rotate(0deg);
+			}
+			&.rotate-right, &.rotate-left{
+				-webkit-transition-property: -webkit-transform;
+				transition-property: transform;
+				-webkit-transition-duration: .75s;
+				transition-duration: .75s;
+			}
 		}
 	}
 }
@@ -74,6 +88,6 @@ nav{
 		display: table-cell;
 		width: 20%;
 		height: 100%;
-		background-color: #FFF;
+		background-color: $nav-color;
 	}
 }

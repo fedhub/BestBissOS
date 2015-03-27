@@ -5,8 +5,10 @@ html, body {
   width: 100%;
   height: 100%;
   direction: rtl;
-  position: absolute;
-  left: 0;
+}
+
+body {
+  position: relative;
 }
 
 * {
@@ -16,19 +18,30 @@ html, body {
 }
 
 .wrapper {
-  width: 99%;
+  width: 100%;
   height: 100%;
   margin: 0 auto;
+  position: absolute;
+  top: 0;
 }
 
 header {
   width: 100%;
   height: 15%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 990;
+  background-color: #FFF;
 }
 
 .main {
   height: 85%;
   width: 100%;
+  position: relative;
+  top: 15%;
+  left: 0;
+  z-index: 980;
 }
 
 .hr {
@@ -81,6 +94,20 @@ header {
   border-radius: 100px;
   background-color: #006400;
 }
+.header-components .hamburger-container .hamburger.rotate-right {
+  transform: rotate(360deg);
+  -webkit-transform: rotate(360deg);
+}
+.header-components .hamburger-container .hamburger.rotate-left {
+  transform: rotate(0deg);
+  -webkit-transform: rotate(0deg);
+}
+.header-components .hamburger-container .hamburger.rotate-right, .header-components .hamburger-container .hamburger.rotate-left {
+  -webkit-transition-property: -webkit-transform;
+  transition-property: transform;
+  -webkit-transition-duration: .75s;
+  transition-duration: .75s;
+}
 
 nav {
   width: 100%;
@@ -113,7 +140,7 @@ nav li {
   display: table-cell;
   width: 20%;
   height: 100%;
-  background-color: #FFF;
+  background-color: #FFA500;
 }
 
 /*/////////////////////////////////////////////*/
@@ -124,7 +151,7 @@ nav li {
   height: 100%;
   display: table;
   margin-top: 2px;
-  margin-botoom: 2px;
+  margin-bottom: 2px;
 }
 
 .food-category-container {
@@ -322,29 +349,79 @@ nav li {
 .cart-container {
   width: 100%;
   height: 100%;
-  margin-top: 4px;
-  margin-bottom: 2px;
 }
 
 .cart-item {
-  width: 100%;
+  width: 95%;
+  margin: 0 auto;
   overflow: hidden;
   background-color: #97A778;
-  border-radius: 5px;
-  font-size: 12px;
+  border-radius: 2px;
   margin-top: 5px;
+}
+.cart-item .item-title {
+  width: 100%;
+  height: 20px;
+  display: table;
+}
+.cart-item .item-title p {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  color: #002E02;
+  font-weight: bold;
+  font-size: 90%;
+}
+.cart-item .additions-type-container {
+  width: 25%;
+  padding-bottom: 4px;
+  float: right;
+}
+.cart-item .additions-type-title {
+  height: 15px;
+  width: 100%;
+  display: table;
+}
+.cart-item .additions-type-title p {
+  display: table-cell;
+  vertical-align: middle;
+  font-size: 80%;
+  text-decoration: underline;
+  padding-right: 4px;
+}
+.cart-item .addition-item {
+  height: 12px;
+  width: 100%;
+  display: table;
+}
+.cart-item .addition-item p {
+  display: table-cell;
+  vertical-align: middle;
+  font-size: 60%;
+  padding-right: 4px;
 }
 
 /*/////////////////////////////////////////////*/
 /* MENU-ITEMS */
 /*/////////////////////////////////////////////*/
 .mobile-menu-container {
-  display: none;
-  width: 75%;
-  height: 100%;
+  display: block;
   position: fixed;
-  top: 0;
+  top: 7.5%;
   left: -75%;
+  width: 75%;
+  height: 92.5%;
   background: #97a778;
   box-shadow: inset -2px 0 2px rgba(0, 46, 2, 0.35);
+  transition: transform .75s ease-in-out;
+  -webkit-transition: -webkit-transform .75s ease-in-out;
+  -webkit-backface-visibility: hidden;
+  -webkit-perspective: 1000;
+  z-index: 1000;
+}
+
+.right {
+  transform: translate3d(100%, 0, 0);
+  /* X, Y, Z */
+  -webkit-transform: translate3d(100%, 0, 0);
 }

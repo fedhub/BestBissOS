@@ -1,5 +1,5 @@
-var base_url = 'best-biss.azurewebsites.net';
-//var base_url = 'localhost:3000';
+//var base_url = 'best-biss.azurewebsites.net';
+var base_url = 'localhost:3000';
 
 $(document).ready(function(){
 
@@ -7,7 +7,7 @@ $(document).ready(function(){
 
     $('li').click(function(){
 
-        $('.skin section').css('background-color', '#FFF');
+        $('.skin section').css('background-color', '#FFA500');
         $('#' + this.id + '-skin').css('background-color', 'green');
 
         if(this.id == 'menu'){
@@ -20,57 +20,42 @@ $(document).ready(function(){
 
     });
 
-    var check = 0;
-    $('.hamburger').click(function(){
-        check++;
-        if(check % 2 == 0) {
-            $('.mobile-menu-container').animate({left: '-75%'},{
-                easing: 'swing',
-                duration: 500,
-                complete: function(){
-                    $(this).css('display', 'none');
-                }
-            });
-            $('body').animate({left: '0'},{
-                easing: 'swing',
-                duration: 500
-            });
-            check = 0;
-            $('.hamburger').animate({rotation: 90},{
-                step: function () {
-                    $(this).css({'transform': 'rotate(0deg)', 'transition-duration': '0.5s'});
-                }
-            });
+
+    var counter = 1;
+    $('.hamburger').click(function(e) {
+        e.preventDefault();
+        var $body = $('.body');
+        var $mobile_menu_container = $('.mobile-menu-container');
+        var $hamburger = $('.hamburger');
+        var transitionEnd = 'transitionend webkitTransitionEnd otransitionend MSTransitionEnd';
+
+        if(counter % 2 == 1) {
+            if($hamburger.hasClass('rotate-left'))
+                $hamburger.removeClass('rotate-left');
+            $hamburger.toggleClass('rotate-right');
+            counter = 0;
         }
         else {
-            $('.mobile-menu-container').show().animate({left: '0'},{
-                easing: 'swing',
-                duration: 500,
-                queue: false
-            });
-            $('body').animate({left: '75%'},{
-                easing: 'swing',
-                duration: 500,
-                queue: false
-            });
-            $('.hamburger').animate({rotation: 0},{
-                step: function () {
-                    $(this).css({'transform': 'rotate(90deg)', 'transition-duration': '0.5s'});
-                }
-            });
-
+            if(counter % 2 == 0) {
+                if($hamburger.hasClass('rotate-right'))
+                    $hamburger.removeClass('rotate-right');
+                $hamburger.toggleClass('rotate-left');
+                counter = 1;
+            }
         }
 
+        $mobile_menu_container.toggleClass('right');
 
+        $hamburger.on(transitionEnd, function() {
+            $hamburger.off(transitionEnd);
+        });
 
-        /*$('.mobile-menu-container').slideToggle(function(){
-            if($(this).is(":visible"))
-                $(this).animate({left : '0'},500);
-            else
-                $(this).animate({left : '-75%'},500);
-        });*/
+        $mobile_menu_container.on(transitionEnd, function(){
+            $body.removeClass('right');
+            $mobile_menu_container.off(transitionEnd);
+        });
+
     });
-
 
 });
 
@@ -380,26 +365,46 @@ function render_cart(){
 
     // for each item in cart
     for(var i = 0; i < my_cart.cart_items.length; i++){
+
         var cart_item = $('<section>', {class: 'cart-item'});
-        cart_item.append(my_cart.cart_items[i].item.name).append(' ' + my_cart.cart_items[i].item.price).append($('<br>'));
+        var item_title = $('<section>', {class: 'cart-item item-title'});
+        var item_title_p = $('<p>', {text: my_cart.cart_items[i].item.name+' - '+my_cart.cart_items[i].item.price+' ₪'});
+
+        item_title.append(item_title_p);
+        cart_item.append(item_title);
 
         // for each item in addition types
         for(var j = 0; j < my_cart.cart_items[i].addition_types.length; j++){
-            cart_item.append(my_cart.cart_items[i].addition_types[j].type.name).append($('<br>'));
+
+            var additions_type_container = $('<section>', {class: 'cart-item additions-type-container'});
+            var additions_type_title = $('<section>', {class: 'cart-item additions-type-title'});
+            var additions_type_title_p = $('<p>', {text: my_cart.cart_items[i].addition_types[j].type.name});
+
+            additions_type_title.append(additions_type_title_p);
+            additions_type_container.append(additions_type_title);
 
             // for each item in addition items
             for(var k = 0; k < my_cart.cart_items[i].addition_types[j].items.length; k++){
-                cart_item.append(my_cart.cart_items[i].addition_types[j].items[k].name + ' ' + my_cart.cart_items[i].addition_types[j].items[k].price).append($('<br>'));
+
+                var addition_item = $('<section>', {class: 'cart-item addition-item'});
+                var addition_item_p = $('<p>', {text: my_cart.cart_items[i].addition_types[j].items[k].name+' - '+my_cart.cart_items[i].addition_types[j].items[k].price+' ₪'});
+
+                addition_item.append(addition_item_p);
+                additions_type_container.append(addition_item);
 
             }
+
+            cart_item.append(additions_type_container);
+
         }
+
         cart_container.append(cart_item);
     }
 
     cart_container.append(my_cart.total_price);
 
     $('.main').empty();
-    $('.skin section').css('background-color', '#FFF');
+    $('.skin section').css('background-color', '#FFA500');
     $('#cart-skin').css('background-color', 'green');
     $('.main').append(cart_container);
 
