@@ -1,5 +1,5 @@
-//var base_url = 'best-biss.azurewebsites.net';
-var base_url = 'localhost:3000';
+var base_url = 'best-biss.azurewebsites.net';
+//var base_url = 'localhost:3000';
 
 $(document).ready(function(){
 
