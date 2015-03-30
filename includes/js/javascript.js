@@ -1,5 +1,5 @@
 //var base_url = 'best-biss.azurewebsites.net';
-var base_url = 'localhost:3000';
+var base_url = 'localhost:3001';
 
 $(document).ready(function(){
 
@@ -311,20 +311,32 @@ function approve_meal(e){
     }
     if(err)
         alert(msg);
-    else
-        cart(food_item, arr);
+    else {
+        if(!(private_customer_logged || business_customer_logged))
+            login_lightbox(food_item, arr);
+        else
+            cart(food_item, arr);
+    }
 
 }
 
+// GLOBALS
+
+var order_type = '';
+var due_time = '';
+var payment_method = '';
+var private_customer_logged = false;
+var business_customer_logged = false;
 
 var my_cart = {
     cart_items: [],
     total_price: 0
 };
 
-function foodItem(food_item, addition_types){
+function foodItem(food_item, addition_types, food_item_price){
     this.item = food_item;
     this.addition_types = addition_types;
+    this.food_item_price = food_item_price;
 }
 
 function additionsType(additions_type, addition_items){
@@ -336,13 +348,16 @@ function cart(food_item, arr){
 
     var cart_addition_items = [];
     var cart_addition_types = [];
+    var item_price = 0;
 
+    item_price += food_item.details.price;
     my_cart.total_price += food_item.details.price;
 
     for(var i = 0; i < arr.length; i++){
 
         for(var j = 0; j < arr[i].length; j++){
             cart_addition_items.push(food_item.addition_types[i].items[arr[i][j]].details);
+            item_price += food_item.addition_types[i].items[arr[i][j]].details.price;
             my_cart.total_price += food_item.addition_types[i].items[arr[i][j]].details.price;
         }
 
@@ -353,7 +368,7 @@ function cart(food_item, arr){
 
     }
 
-    var cart_item = new foodItem(food_item.details, cart_addition_types);
+    var cart_item = new foodItem(food_item.details, cart_addition_types, item_price);
     my_cart.cart_items.push(cart_item);
     render_cart();
 
@@ -367,9 +382,11 @@ function render_cart(){
     for(var i = 0; i < my_cart.cart_items.length; i++){
 
         var cart_item = $('<section>', {class: 'cart-item'});
+        var delete_item = $('<section>', {class: 'delete-item', id: i+'-cart', text: '✖'});
         var item_title = $('<section>', {class: 'cart-item item-title'});
         var item_title_p = $('<p>', {text: my_cart.cart_items[i].item.name+' - '+my_cart.cart_items[i].item.price+' ₪'});
 
+        item_title.append(delete_item);
         item_title.append(item_title_p);
         cart_item.append(item_title);
 
@@ -401,14 +418,235 @@ function render_cart(){
         cart_container.append(cart_item);
     }
 
-    cart_container.append(my_cart.total_price);
-
     $('.main').empty();
     $('.skin section').css('background-color', '#FFA500');
     $('#cart-skin').css('background-color', 'green');
     $('.main').append(cart_container);
 
+    var cart_options = $('<section>', {class: 'cart-options'});
+    var cart_approve = $('<section>', {class: 'cart-approve'});
+    var approve_button = $('<section>', {class: 'approve-button', id: 'approve-cart'});
+    var approve_button_p = $('<p>', {text: 'המשך >>'});
+    var footer = $('<section>', {class: 'cart-footer'});
+    var total_price = $('<p>', {class: 'total-price', text: my_cart.total_price+' ₪'});
+    var order_type_option = $('<section>', {class: 'cart-option', id: 'order-type'}).click(function(){lightbox(this.id);});
+    var due_time_option = $('<section>', {class: 'cart-option', id: 'due-time'}).click(function(){lightbox(this.id);});
+    var payment_method_option = $('<section>', {class: 'cart-option', id: 'payment-method'}).click(function(){lightbox(this.id);});
+
+    $('.delete-item').click(function(){
+        var index = this.id[0];
+        my_cart.total_price -= my_cart.cart_items[index].food_item_price;
+        my_cart.cart_items.splice(index,1);
+        render_cart();
+    });
+
+    order_type_option.append($('<p>', {text: 'סוג הזמנה'}));
+    due_time_option.append($('<p>', {text: 'שעת הזמנה'}));
+    payment_method_option.append($('<p>', {text: 'אמצעי תשלום'}));
+    cart_options.append(order_type_option);
+    cart_options.append(due_time_option);
+    cart_options.append(payment_method_option);
+    cart_options.append(total_price);
+    approve_button.append(approve_button_p);
+    cart_approve.append(approve_button);
+
+    footer.append(cart_options);
+    footer.append(cart_approve);
+    $('.main').append(footer);
+
 }
+
+function lightbox(id){
+
+    if(id == 'order-type')
+        order_type_lightbox();
+    if(id == 'due-time')
+        due_time_lightbox();
+    if(id == 'payment-method')
+        payment_method_lightbox();
+
+}
+
+function order_type_lightbox(){
+
+    var $lightbox = $('#lightbox');
+    var $lightbox_content = $('.lightbox-content');
+
+    $lightbox_content.empty();
+
+    var delivery = $('<section>', {class: 'order-type-box', id: 'delivery'}).append($('<p>', {text: 'משלוח'})).click(function(){set_order_type(this.id);});
+    var take_away = $('<section>', {class: 'order-type-box', id: 'take-away'}).append($('<p>', {text: 'T.A.'})).click(function(){set_order_type(this.id);});
+    var sit = $('<section>', {class: 'order-type-box', id: 'sit'}).append($('<p>', {text: 'ישיבה במקום'})).click(function(){set_order_type(this.id);});
+
+    $('.lightbox-title p').text('בחר סוג הזמנה');
+
+    $lightbox_content.append(delivery);
+    $lightbox_content.append(take_away);
+    $lightbox_content.append(sit);
+
+    $lightbox.fadeIn();
+}
+
+function due_time_lightbox(){
+
+    var $lightbox = $('#lightbox');
+    var $lightbox_content = $('.lightbox-content');
+
+    $lightbox_content.empty();
+
+    var due_time_box = $('<section>', {class: 'due-time-box'}).append($('<input>'));
+
+    $('.lightbox-title p').text('בחר שעת הזמנה');
+
+    $lightbox_content.append(due_time_box);
+    $lightbox_content.append($('<section>', {class: 'approve-button', id: 'approve-due-time'}).append($('<p>',{text: 'המשך >>'})).click(function(){set_due_time()}));
+
+    $lightbox.fadeIn();
+}
+
+function payment_method_lightbox(){
+
+    var $lightbox = $('#lightbox');
+    var $lightbox_content = $('.lightbox-content');
+
+    $lightbox_content.empty();
+
+    var cash = $('<section>', {class: 'payment-method-box', id: 'cash'}).append($('<p>', {text: 'מזומן'})).click(function(){set_payment_method(this.id);});
+    var credit = $('<section>', {class: 'payment-method-box', id: 'credit'}).append($('<p>', {text: 'כרטיס אשראי'})).click(function(){set_payment_method(this.id);});
+
+    $('.lightbox-title p').text('בחר סוג הזמנה');
+
+    $lightbox_content.append(cash);
+    $lightbox_content.append(credit);
+
+    $lightbox.fadeIn();
+
+}
+
+function login_lightbox(food_item, arr){
+
+    var $lightbox = $('#lightbox');
+    var $lightbox_content = $('.lightbox-content');
+
+    $lightbox_content.empty();
+
+    $('.lightbox-title p').text('התחברות');
+
+    var login_container = $('<section>', {class: 'login-container'});
+    var customer_type_label = $('<p>', {text: 'בחר סוג לקוח:'});
+
+    var private_type_option = $('<section>', {class: 'customer-type-option', id: 'private-customer'});
+    var business_type_option = $('<section>', {class: 'customer-type-option', id: 'business-customer'});
+
+    private_type_option.append($('<p>', {text: 'לקוח פרטי'}));
+    business_type_option.append($('<p>', {text: 'לקוח עסקי'}));
+
+    login_container.append(customer_type_label).append($('<br>')).append(private_type_option).append(business_type_option).append($('<div>', {class: 'clear'}));
+    $lightbox_content.append(login_container);
+    $lightbox_content.append($('<section>', {class: 'approve-button', id: 'approve-login'}).append($('<p>',{text: 'המשך >>'})));
+    $lightbox.fadeIn();
+
+    $('.customer-type-option').click(function(){
+
+        var $private_customer = $('#private-customer');
+        var $business_customer = $('#business-customer');
+
+        var phone_label = $('<p>', {id: 'phone-label', text: 'מספר טלפון:'});
+        var login_phone = $('<input>', {id: 'login-phone', type:'text', name: 'phone-number'});
+
+        var company_label = $('<p>', {id: 'company-label', text: 'קוד חברה:'});
+        var company_code = $('<input>', {id: 'company-code', type:'text', name: 'company-code'});
+
+        $('#phone-label').remove();
+        $('#login-phone').remove();
+        $('#company-label').remove();
+        $('#company-code').remove();
+        login_container.append(phone_label).append(login_phone);
+
+        if(this.id == 'private-customer'){
+            $private_customer.toggleClass('selected');
+            if($business_customer.hasClass('selected')){
+                $business_customer.toggleClass('selected');
+            }
+        }
+        if(this.id == 'business-customer'){
+            $business_customer.toggleClass('selected');
+            if($private_customer.hasClass('selected')){
+                $private_customer.toggleClass('selected');
+            }
+            login_container.append(company_label).append(company_code);
+        }
+    });
+
+    $('#approve-login').click(function(){
+
+        var private_cust = false;
+        var business_cust = false;
+
+        var $private_customer = $('#private-customer');
+        var $business_customer = $('#business-customer');
+        var $login_phone = $('#login-phone').val();
+        var $company_code = $('#company-code').val();
+
+        if($private_customer.hasClass('selected'))
+            private_cust = true;
+        if($business_customer.hasClass('selected'))
+            business_cust = true;
+
+        if(!private_cust && !business_cust)
+            alert('אנא בחר סוג לקוח');
+        else{
+            var msg = '';
+            console.log('private -'+private_cust);
+            console.log('business -'+business_cust);
+
+            if($login_phone.length == 0)
+                msg += 'אנא הזן מספר טלפון';
+            if(business_cust && $company_code.length == 0)
+                msg += ' אנא הזן קוד חברה';
+
+            if(msg.length != 0) {
+                alert(msg);
+            }
+            else {
+                $lightbox.fadeOut(function(){
+                    cart(food_item, arr);
+                });
+            }
+        }
+
+    });
+
+}
+
+function set_due_time(){
+    var $lightbox = $('#lightbox');
+
+    $lightbox.fadeOut(function(){
+        due_time = $('.due-time-box input').val();
+        console.log(due_time);
+    });
+}
+
+function set_payment_method(pay_with){
+    console.log(pay_with);
+    var $lightbox = $('#lightbox');
+
+    $lightbox.fadeOut(function(){
+        payment_method = pay_with;
+    });
+}
+
+function set_order_type(type){
+    console.log(type);
+    var $lightbox = $('#lightbox');
+
+    $lightbox.fadeOut(function(){
+        order_type = type;
+    });
+}
+
+
 
 
 
