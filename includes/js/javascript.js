@@ -327,6 +327,7 @@ var due_time = '';
 var payment_method = '';
 var private_customer_logged = false;
 var business_customer_logged = false;
+var customer_details = {};
 
 var my_cart = {
     cart_items: [],
@@ -344,7 +345,7 @@ function additionsType(additions_type, addition_items){
     this.items = addition_items;
 }
 
-function cart(food_item, arr, user_details){
+function cart(food_item, arr){
 
     var cart_addition_items = [];
     var cart_addition_types = [];
@@ -370,11 +371,11 @@ function cart(food_item, arr, user_details){
 
     var cart_item = new foodItem(food_item.details, cart_addition_types, item_price);
     my_cart.cart_items.push(cart_item);
-    render_cart(user_details);
+    render_cart();
 
 }
 
-function render_cart(user_details){
+function render_cart(){
 
     var cart_container = $('<section>', {class: 'cart-container'});
 
@@ -425,13 +426,13 @@ function render_cart(user_details){
 
     var cart_options = $('<section>', {class: 'cart-options'});
     var cart_approve = $('<section>', {class: 'cart-approve'});
-    var approve_button = $('<section>', {class: 'approve-button', id: 'approve-cart'});
+    var approve_button = $('<section>', {class: 'approve-button', id: 'approve-cart'}).click(function(){make_the_order()});
     var approve_button_p = $('<p>', {text: 'המשך >>'});
     var footer = $('<section>', {class: 'cart-footer'});
     var total_price = $('<p>', {class: 'total-price', text: my_cart.total_price+' ₪'});
-    var order_type_option = $('<section>', {class: 'cart-option', id: 'order-type'}).click(function(){order_type_lightbox(user_details);});
-    var due_time_option = $('<section>', {class: 'cart-option', id: 'due-time'}).click(function(){due_time_lightbox();});
-    var payment_method_option = $('<section>', {class: 'cart-option', id: 'payment-method'}).click(function(){payment_method_lightbox();});
+    var order_type_option = $('<section>', {class: 'cart-option', id: 'order-type'}).click(function(){lightbox(this.id)});
+    var due_time_option = $('<section>', {class: 'cart-option', id: 'due-time'}).click(function(){lightbox(this.id)});
+
 
     $('.delete-item').click(function(){
         var index = this.id[0];
@@ -442,12 +443,15 @@ function render_cart(user_details){
 
     order_type_option.append($('<p>', {text: 'סוג הזמנה'}));
     due_time_option.append($('<p>', {text: 'שעת הזמנה'}));
-    payment_method_option.append($('<p>', {text: 'אמצעי תשלום'}));
     cart_options.append(order_type_option);
     cart_options.append(due_time_option);
-    cart_options.append(payment_method_option);
+    if(private_customer_logged){
+        var payment_method_option = $('<section>', {class: 'cart-option', id: 'payment-method'}).click(function(){lightbox(this.id)});
+        payment_method_option.append($('<p>', {text: 'אמצעי תשלום'}));
+        cart_options.append(payment_method_option);
+    }
     if(business_customer_logged){
-        var budget_option = $('<section>', {class: 'cart-option', id: 'budget'}).click(function(){business_budget_lightbox(user_details)});
+        var budget_option = $('<section>', {class: 'cart-option', id: 'budget'}).click(function(){business_budget_lightbox()});
         budget_option.append($('<p>', {text: 'בדיקת יתרה'}));
         cart_options.append(budget_option);
     }
@@ -461,7 +465,7 @@ function render_cart(user_details){
 
 }
 
-/*function lightbox(id){
+function lightbox(id){
 
     if(id == 'order-type')
         order_type_lightbox();
@@ -470,9 +474,9 @@ function render_cart(user_details){
     if(id == 'payment-method')
         payment_method_lightbox();
 
-}*/
+}
 
-function business_budget_lightbox(user_details){
+function business_budget_lightbox(){
 
     var $lightbox = $('#lightbox');
     var $lightbox_content = $('.lightbox-content');
@@ -481,9 +485,9 @@ function business_budget_lightbox(user_details){
 
     var budget_box = $('<section>', {class: 'budget-option-box'});
     var msg = 'שלום ';
-    msg += user_details.first_name + ' ' + user_details.last_name + ',\n';
+    msg += customer_details.first_name + ' ' + customer_details.last_name + ',\n';
     msg += 'יתרתך בחשבון נכון לעכשיו ולפני ביצוע ההזמנה הנוכחית היא: ';
-    msg += user_details.budget+' ₪';
+    msg += customer_details.budget+' ₪';
 
     //var budget_box_p = $('<p>', {text: msg});
 
@@ -498,7 +502,7 @@ function business_budget_lightbox(user_details){
 
 }
 
-function order_type_lightbox(user_details){
+function order_type_lightbox(){
 
     var $lightbox = $('#lightbox');
     var $lightbox_content = $('.lightbox-content');
@@ -510,7 +514,7 @@ function order_type_lightbox(user_details){
 
             set_order_type(this.id);
             $lightbox.fadeOut(function(){
-                delivery_details(user_details);
+                delivery_details();
             });
 
         });
@@ -528,37 +532,67 @@ function order_type_lightbox(user_details){
     $lightbox.fadeIn();
 }
 
-function delivery_details(user_details){
+function delivery_details(){
 
-    var $lightbox = $('#lightbox');
+    var $lightbox = $('<section>', {class: 'lightbox-delivery-details'});
     $lightbox.empty();
     var lightbox_content = $('<section>', {class: 'delivery-box'});
 
+    var street = customer_details.street.replace(/"/g, '&quot;');
+
     var html = '<form class="delivery-form">'+
                     '<p>שם פרטי:</p>'+
-                    '<input type="text" id="first-name" value="'+user_details.first_name+'">'+
+                    '<input type="text" id="first-name" value="'+customer_details.first_name+'">'+
                     '<p>שם משפחה:</p>'+
-                    '<input type="text" id="last-name" value="'+user_details.last_name+'">'+
+                    '<input type="text" id="last-name" value="'+customer_details.last_name+'">'+
                     '<p>מספר טלפון:</p>'+
-                    '<input type="text" id="phone-number" value="'+user_details.phone_number+'">'+
+                    '<input type="text" id="phone-number" value="'+customer_details.phone_number+'">'+
                     '<p>רחוב:</p>'+
-                    '<input type="text" id="street" value="'+user_details.street+'">'+
+                    '<input type="text" id="street" value="'+street+'">'+
                     '<p>מספר בית:</p>'+
-                    '<input type="text" id="house-number" value="'+user_details.house_number+'">'+
+                    '<input type="text" id="house-number" value="'+customer_details.house_number+'">'+
                     '<p>קומה:</p>'+
-                    '<input type="text" id="floor" value="'+user_details.floor+'">'+
+                    '<input type="text" id="floor" value="'+customer_details.floor+'">'+
                     '<p>כניסה:</p>'+
-                    '<input type="text" id="enter" value="'+user_details.enter+'">'+
+                    '<input type="text" id="enter" value="'+customer_details.enter+'">'+
                     '<p>הערות:</p>'+
-                    '<textarea id="comments">'+user_details.comments+'</textarea>'+
+                    '<textarea id="comments">'+customer_details.comments+'</textarea>'+
                 '</form>';
 
     lightbox_content.html(html);
 
-    lightbox_content.append($('<section>', {class: 'approve-button', id: 'approve-delivery-details'}).append($('<p>',{text: 'המשך >>'})));
+    lightbox_content.append($('<section>', {class: 'approve-button', id: 'approve-delivery-details'}).append($('<p>',{text: 'אישור'}))
+        .click(function(){
+            var msg = delivery_input_checks();
+            if(msg.length != 0)
+                alert(msg);
+            else
+                $lightbox.fadeOut();
+        }));
 
     $lightbox.append(lightbox_content);
+    $('body').append($lightbox);
     $lightbox.fadeIn();
+
+}
+
+function delivery_input_checks(){
+
+    var msg = '';
+    if($('#first-name').val().length == 0)
+        msg += 'הזן שם פרטי\n';
+    if($('#last-name').val().length == 0)
+        msg += 'הזן שם משפחה\n';
+    if($('#phone-number').val().length == 0)
+        msg += 'הזן מספר טלפון\n';
+    if($('#street').val().length == 0)
+        msg += 'הזן שם הרחוב\n';
+    if($('#house-number').val().length == 0)
+        msg += 'הזן מספר בית\n';
+    if($('#floor').val().length == 0)
+        msg += 'הזן קומה';
+
+    return msg;
 
 }
 
@@ -739,7 +773,8 @@ function private_login(food_item, arr, login_phone){
 
         private_customer_logged = true;
         $('#lightbox').fadeOut(function(){
-            cart(food_item, arr, user_details);
+            customer_details = user_details;
+            cart(food_item, arr);
         });
     });
 
@@ -763,7 +798,8 @@ function business_login(food_item, arr, login_phone, company_code){
             else {
                 business_customer_logged = true;
                 $('#lightbox').fadeOut(function () {
-                    cart(food_item, arr, user_details);
+                    customer_details = user_details;
+                    cart(food_item, arr);
                 });
             }
         }
@@ -771,6 +807,152 @@ function business_login(food_item, arr, login_phone, company_code){
     });
 
 }
+
+
+function make_the_order(){
+
+    var msg = '';
+    if(due_time == '')
+        msg += 'בחר שעת הזמנה\n';
+    if(private_customer_logged) {
+        if (payment_method == '')
+            msg += 'בחר אמצעי תשלום\n';
+    }
+    if(order_type == '')
+        msg += 'בחר סוג הזמנה\n';
+    if(my_cart.cart_items.length == 0)
+        msg += 'עליך לבחור לפחות פריט אחד להזמנה';
+    if(msg != '')
+        alert(msg);
+    else {
+        if(private_customer_logged && order_type == 'cash'){
+            private_order();
+        }
+        if(private_customer_logged && order_type == 'credit'){
+
+        }
+        if(business_customer_logged){
+
+        }
+    }
+}
+
+function private_order(){
+
+    var info = {
+        my_cart: my_cart,
+        customer_details: updated_customer_details(),
+        due_time: due_time,
+        order_type: order_type,
+        payment_method: payment_method
+    }
+
+    var url = 'http://'+base_url+'/make-order';
+
+    $.ajax({
+
+        type: 'POST',
+        url: url,
+        data : {data : JSON.stringify(info)}
+
+    }).done(function(res){
+        alert(res);
+    });
+
+}
+
+function updated_customer_details(){
+
+    var updated_details = {
+        first_name: $('#first-name').val(),
+        last_name: $('#last-name').val(),
+        street: $('#street').val(),
+        house_number: $('#house-number').val(),
+        floor: $('#floor').val(),
+        enter: $('#enter').val()
+    }
+
+    return updated_details;
+
+}
+
+
+
+$(document).ready(function(){
+
+    $('.item-container').click(function(e){
+
+        if(e.target.id != "edit")
+            $(this).next('.addition-items-container').toggle();
+    });
+
+    $('form').submit(function(e){
+
+        e.preventDefault();
+
+        var class_name = $(this).attr('class');
+        var url = '';
+
+        if(class_name == 'food-item-form'){
+
+            var info = {
+                name : $('.'+class_name+' textarea[name=name]').val(),
+                description : $('.'+class_name+' textarea[name=description]').val(),
+                price : $('.'+class_name+' textarea[name=price]').val()
+            }
+            url = '/edit-food-item&'+$(this).attr('id');
+        }
+
+        if(class_name == 'addition-item-form'){
+
+            var info = {
+                name : $('.'+class_name+' textarea[name=name]').val(),
+                description : $('.'+class_name+' textarea[name=description]').val(),
+                price : $('.'+class_name+' textarea[name=price]').val()
+            }
+            url = '/edit-addition-item&'+$(this).attr('id');
+        }
+
+        if(class_name == 'additions-type-form'){
+
+            var info = {
+                name : $('.'+class_name+' textarea[name=name]').val(),
+                description : $('.'+class_name+' textarea[name=description]').val(),
+                radio : $('.'+class_name+' input[type=radio]:checked').attr('value').toString(),
+                option: $('.'+class_name+' select[name=selector]').val()
+            }
+            url = '/edit-additions-type&'+$(this).attr('id');
+        }
+
+        $.ajax({
+
+            type: 'POST',
+            url: url,
+            data : {data : JSON.stringify(info)}
+
+        }).done(function(res){
+            $('#message-panel').text(res);
+        });
+
+
+
+    });
+
+});
+
+
+// GLOBALS
+
+/*var order_type = '';
+var due_time = '';
+var payment_method = '';
+var private_customer_logged = false;
+var business_customer_logged = false;
+
+var my_cart = {
+    cart_items: [],
+    total_price: 0
+};*/
 
 
 

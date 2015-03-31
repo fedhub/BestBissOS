@@ -516,7 +516,7 @@ p.total-price {
 /*/////////////////////////////////////////////*/
 /* LIGHTBOX */
 /*/////////////////////////////////////////////*/
-.lightbox {
+.lightbox, .lightbox-delivery-details {
   display: none;
   position: fixed;
   z-index: 1000;
@@ -528,7 +528,7 @@ p.total-price {
   background-color: rgba(255, 255, 255, 0.8);
   cursor: pointer;
 }
-.lightbox .lightbox-container {
+.lightbox .lightbox-container, .lightbox-delivery-details .lightbox-container {
   width: 50%;
   height: 50%;
   background-color: #FFF;
@@ -537,12 +537,12 @@ p.total-price {
   border: 1px solid #B6B6B6;
   margin-top: 20%;
 }
-.lightbox .lightbox-title {
+.lightbox .lightbox-title, .lightbox-delivery-details .lightbox-title {
   width: 100%;
   height: 20%;
   display: table;
 }
-.lightbox .lightbox-title p {
+.lightbox .lightbox-title p, .lightbox-delivery-details .lightbox-title p {
   display: table-cell;
   text-align: center;
   vertical-align: middle;
@@ -550,11 +550,11 @@ p.total-price {
   font-weight: bold;
   color: #002E02;
 }
-.lightbox .lightbox-content {
+.lightbox .lightbox-content, .lightbox-delivery-details .lightbox-content {
   width: 100%;
   height: 80%;
 }
-.lightbox .order-type-box, .lightbox .payment-method-box {
+.lightbox .order-type-box, .lightbox .payment-method-box, .lightbox-delivery-details .order-type-box, .lightbox-delivery-details .payment-method-box {
   width: 80%;
   height: 30%;
   margin: 5px auto;
@@ -562,7 +562,7 @@ p.total-price {
   border: 1px solid #B6B6B6;
   display: table;
 }
-.lightbox .order-type-box p, .lightbox .payment-method-box p {
+.lightbox .order-type-box p, .lightbox .payment-method-box p, .lightbox-delivery-details .order-type-box p, .lightbox-delivery-details .payment-method-box p {
   display: table-cell;
   text-align: center;
   vertical-align: middle;
@@ -570,43 +570,43 @@ p.total-price {
   font-weight: bold;
   color: #002E02;
 }
-.lightbox .due-time-box {
+.lightbox .due-time-box, .lightbox-delivery-details .due-time-box {
   width: 80%;
   height: 30%;
   margin: 30px auto;
 }
-.lightbox .due-time-box input {
+.lightbox .due-time-box input, .lightbox-delivery-details .due-time-box input {
   width: 100%;
   height: 50%;
 }
-.lightbox .budget-option-box {
+.lightbox .budget-option-box, .lightbox-delivery-details .budget-option-box {
   width: 60%;
   height: 80%;
   margin: 30px auto;
   box-shadow: 0px 0px 8px -2px #000;
   border: 1px solid #B6B6B6;
 }
-.lightbox .budget-option-box p {
+.lightbox .budget-option-box p, .lightbox-delivery-details .budget-option-box p {
   float: right;
   font-size: 12px;
   padding: 2px 3px 2px 0;
   color: #002E02;
 }
-.lightbox .login-container {
+.lightbox .login-container, .lightbox-delivery-details .login-container {
   height: 74%;
   width: 100%;
 }
-.lightbox .login-container p {
+.lightbox .login-container p, .lightbox-delivery-details .login-container p {
   float: right;
   font-size: 12px;
   padding: 2px 3px 2px 0;
   color: #002E02;
 }
-.lightbox .login-container input {
+.lightbox .login-container input, .lightbox-delivery-details .login-container input {
   height: 17%;
   width: 90%;
 }
-.lightbox .customer-type-option {
+.lightbox .customer-type-option, .lightbox-delivery-details .customer-type-option {
   height: 25%;
   width: 22%;
   margin-right: 10px;
@@ -616,20 +616,20 @@ p.total-price {
   display: table;
   background-color: #FFF;
 }
-.lightbox .customer-type-option p {
+.lightbox .customer-type-option p, .lightbox-delivery-details .customer-type-option p {
   display: table-cell;
   vertical-align: middle;
   text-align: center;
   font-size: 12px;
   color: #002E02;
 }
-.lightbox .customer-type-option.selected {
+.lightbox .customer-type-option.selected, .lightbox-delivery-details .customer-type-option.selected {
   background-color: #97A778;
 }
-.lightbox .customer-type-option.unselected {
+.lightbox .customer-type-option.unselected, .lightbox-delivery-details .customer-type-option.unselected {
   background-color: #FFF;
 }
-.lightbox .delivery-box {
+.lightbox .delivery-box, .lightbox-delivery-details .delivery-box {
   width: 80%;
   height: 80%;
   margin: 12% auto;
