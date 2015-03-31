@@ -70,6 +70,20 @@
 		}
 	}
 
+	.budget-option-box{
+		width: 60%;
+		height: 80%;
+		margin: 30px auto;
+		box-shadow: 0px 0px 8px -2px #000;
+		border: 1px solid #B6B6B6;
+		p{
+			float: right;
+			font-size: 12px;
+			padding: 2px 3px 2px 0;
+			color: $txt-color;
+		}
+	}
+
 	.login-container{
 		height: 74%;
 		width: 100%;
@@ -109,4 +123,14 @@
 			background-color: #FFF;
 		}
 	}
+
+	.delivery-box{
+		width: 80%;
+		height: 80%;
+		margin: 12% auto;
+		box-shadow: 0px 0px 8px -2px #000;
+		border: 1px solid #B6B6B6;
+		background-color: #FFF;
+	}
+
 }
