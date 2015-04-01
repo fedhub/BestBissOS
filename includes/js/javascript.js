@@ -1,7 +1,15 @@
 //var base_url = 'best-biss.azurewebsites.net';
 var base_url = 'localhost:3001';
 
+var socket = io.connect('http://'+base_url,{
+    'reconnect': true,
+    'reconnection delay': 2000,
+    'max reconnection attempts': 10
+});
+
 $(document).ready(function(){
+
+    socket.emit('communicate');
 
     get_logo();
 
@@ -825,15 +833,15 @@ function make_the_order(){
     if(msg != '')
         alert(msg);
     else {
-        if(private_customer_logged && order_type == 'cash'){
+        if(private_customer_logged && payment_method == 'cash'){
             private_order();
         }
-        if(private_customer_logged && order_type == 'credit'){
+        /*if(private_customer_logged && payment_method == 'credit'){
 
         }
         if(business_customer_logged){
 
-        }
+        }*/
     }
 }
 
@@ -846,6 +854,7 @@ function private_order(){
         order_type: order_type,
         payment_method: payment_method
     }
+    alert('here');
 
     var url = 'http://'+base_url+'/make-order';
 
@@ -875,70 +884,6 @@ function updated_customer_details(){
     return updated_details;
 
 }
-
-
-
-$(document).ready(function(){
-
-    $('.item-container').click(function(e){
-
-        if(e.target.id != "edit")
-            $(this).next('.addition-items-container').toggle();
-    });
-
-    $('form').submit(function(e){
-
-        e.preventDefault();
-
-        var class_name = $(this).attr('class');
-        var url = '';
-
-        if(class_name == 'food-item-form'){
-
-            var info = {
-                name : $('.'+class_name+' textarea[name=name]').val(),
-                description : $('.'+class_name+' textarea[name=description]').val(),
-                price : $('.'+class_name+' textarea[name=price]').val()
-            }
-            url = '/edit-food-item&'+$(this).attr('id');
-        }
-
-        if(class_name == 'addition-item-form'){
-
-            var info = {
-                name : $('.'+class_name+' textarea[name=name]').val(),
-                description : $('.'+class_name+' textarea[name=description]').val(),
-                price : $('.'+class_name+' textarea[name=price]').val()
-            }
-            url = '/edit-addition-item&'+$(this).attr('id');
-        }
-
-        if(class_name == 'additions-type-form'){
-
-            var info = {
-                name : $('.'+class_name+' textarea[name=name]').val(),
-                description : $('.'+class_name+' textarea[name=description]').val(),
-                radio : $('.'+class_name+' input[type=radio]:checked').attr('value').toString(),
-                option: $('.'+class_name+' select[name=selector]').val()
-            }
-            url = '/edit-additions-type&'+$(this).attr('id');
-        }
-
-        $.ajax({
-
-            type: 'POST',
-            url: url,
-            data : {data : JSON.stringify(info)}
-
-        }).done(function(res){
-            $('#message-panel').text(res);
-        });
-
-
-
-    });
-
-});
 
 
 // GLOBALS
