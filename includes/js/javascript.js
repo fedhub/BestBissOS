@@ -9,8 +9,6 @@ var socket = io.connect('http://'+base_url,{
 
 $(document).ready(function(){
 
-    socket.emit('communicate');
-
     get_logo();
 
     $('li').click(function(){
@@ -336,6 +334,7 @@ var payment_method = '';
 var private_customer_logged = false;
 var business_customer_logged = false;
 var customer_details = {};
+var updated_user_details = {};
 
 var my_cart = {
     cart_items: [],
@@ -553,8 +552,6 @@ function delivery_details(){
                     '<input type="text" id="first-name" value="'+customer_details.first_name+'">'+
                     '<p>שם משפחה:</p>'+
                     '<input type="text" id="last-name" value="'+customer_details.last_name+'">'+
-                    '<p>מספר טלפון:</p>'+
-                    '<input type="text" id="phone-number" value="'+customer_details.phone_number+'">'+
                     '<p>רחוב:</p>'+
                     '<input type="text" id="street" value="'+street+'">'+
                     '<p>מספר בית:</p>'+
@@ -591,8 +588,6 @@ function delivery_input_checks(){
         msg += 'הזן שם פרטי\n';
     if($('#last-name').val().length == 0)
         msg += 'הזן שם משפחה\n';
-    if($('#phone-number').val().length == 0)
-        msg += 'הזן מספר טלפון\n';
     if($('#street').val().length == 0)
         msg += 'הזן שם הרחוב\n';
     if($('#house-number').val().length == 0)
@@ -833,73 +828,76 @@ function make_the_order(){
     if(msg != '')
         alert(msg);
     else {
-        if(private_customer_logged && payment_method == 'cash'){
-            private_order();
-        }
-        /*if(private_customer_logged && payment_method == 'credit'){
+        if(private_customer_logged){
+            var info;
+            var url = '';
+            if(payment_method == 'cash'){
+                url = 'http://'+base_url+'/make-order';
+                if(order_type == 'delivery') {
+                    update_customer_details();
+                    info = get_customer_details(true);
+                }
+                else
+                    info = get_customer_details(false);
+            }
+            /*if(payment_method == 'credit'){
+                if(order_type != 'delivery'){
+                    private_order(update_customer_details());
+                }
+                else{
 
+                }
+            }*/
+            info.customer_type = 'private';
         }
-        if(business_customer_logged){
-
+       /* if(business_customer_logged) {
         }*/
+
+        /*$.ajax({
+            type: 'POST',
+            url: url,
+            data : {data : JSON.stringify(info)}
+        }).done(function(res){
+            socket.emit('communicate', JSON.stringify(info));
+        });*/
+
+        console.log('hello '+customer_details.first_name);
+
+        socket.emit('communicate', JSON.stringify(info));
     }
 }
 
-function private_order(){
+function update_customer_details(){
+
+    updated_user_details.last_name = $('#last-name').val();
+    updated_user_details.first_name = $('#first-name').val();
+    updated_user_details.street = $('#street').val();
+    updated_user_details.floor = $('#floor').val();
+    updated_user_details.enter = $('#enter').val();
+    updated_user_details.house_number = $('#house-number').val();
+    updated_user_details.phone_number = customer_details.phone_number;
+    updated_user_details.comments = $('#comments').val();
+
+}
+
+function get_customer_details(is_delivery){
+
+    var personal_details = {};
+    if(is_delivery)
+        personal_details = updated_user_details;
+    else
+        personal_details = customer_details;
+
 
     var info = {
         my_cart: my_cart,
-        customer_details: updated_customer_details(),
+        customer_details: personal_details,
         due_time: due_time,
         order_type: order_type,
         payment_method: payment_method
     }
-    alert('here');
-
-    var url = 'http://'+base_url+'/make-order';
-
-    $.ajax({
-
-        type: 'POST',
-        url: url,
-        data : {data : JSON.stringify(info)}
-
-    }).done(function(res){
-        alert(res);
-    });
-
+    return info;
 }
-
-function updated_customer_details(){
-
-    var updated_details = {
-        first_name: $('#first-name').val(),
-        last_name: $('#last-name').val(),
-        street: $('#street').val(),
-        house_number: $('#house-number').val(),
-        floor: $('#floor').val(),
-        enter: $('#enter').val()
-    }
-
-    return updated_details;
-
-}
-
-
-// GLOBALS
-
-/*var order_type = '';
-var due_time = '';
-var payment_method = '';
-var private_customer_logged = false;
-var business_customer_logged = false;
-
-var my_cart = {
-    cart_items: [],
-    total_price: 0
-};*/
-
-
 
 
 
