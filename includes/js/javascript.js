@@ -24,6 +24,10 @@ $(document).ready(function(){
             render_cart();
         }
 
+        if(this.id == 'status'){
+            status_page();
+        };
+
     });
 
 
@@ -828,6 +832,7 @@ function make_the_order(){
     if(msg != '')
         alert(msg);
     else {
+        console.log(my_cart.cart_items[0].addition_types[0].items[0].id);
         if(private_customer_logged){
             var info;
             var url = '';
@@ -853,17 +858,14 @@ function make_the_order(){
        /* if(business_customer_logged) {
         }*/
 
-        /*$.ajax({
+        $.ajax({
             type: 'POST',
             url: url,
             data : {data : JSON.stringify(info)}
         }).done(function(res){
             socket.emit('communicate', JSON.stringify(info));
-        });*/
+        });
 
-        console.log('hello '+customer_details.first_name);
-
-        socket.emit('communicate', JSON.stringify(info));
     }
 }
 
@@ -880,7 +882,7 @@ function update_customer_details(){
 
 }
 
-function get_customer_details(is_delivery){
+function get_customer_details(is_delivery, customer_type){
 
     var personal_details = {};
     if(is_delivery)
@@ -897,6 +899,78 @@ function get_customer_details(is_delivery){
         payment_method: payment_method
     }
     return info;
+}
+
+function status_page(){
+
+    $('.main').empty();
+    $('.main').append($('<input>', {class: 'status-phone'}));
+    $('.main').append($('<section>', {class: 'approve-button', id: 'check-status'}).append($('<p>', {text: 'בדוק'})
+        .click(
+        function(){
+            var phone_number = $('.status-phone').val();
+            if(phone_number.length == 0)
+                alert('הזן מספר טלפון');
+            else {
+                var url = 'http://'+base_url+'/check-status';
+                var info = {
+                    phone_number: phone_number
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {data : JSON.stringify(info)}
+                }).done(function(order_status){
+                    render_status_page(order_status);
+                });
+            }
+        })));
+
+}
+
+function render_status_page(order_status){
+
+    $('.main').find('.status-container').remove();
+
+    var type = order_status.order_type;
+    var status_level = order_status.status_level;
+
+    var level_3 = '';
+    var level_4 = '';
+    if(type == 'delivery') {
+        level_3 = 'אריזה';
+        level_4 = 'בדרך אלייך';
+    }
+    if(type == 'sit') {
+        level_3 = 'האוכל מוכן';
+        level_4 = 'מחכה בצלחת';
+    }
+    if(type == 'take-away') {
+        level_3 = 'אריזה';
+        level_4 = 'מחכה לאיסוף';
+    }
+
+    var status_container = $('<section>', {class: 'status-container'});
+    var status_bar = $('<section>', {class: 'status-bar'});
+    var first_level = $('<section>', {class: 'status-level first-status'}).append($('<p>', {text: 'ההזמנה התקבלה'}));
+    var second_level = $('<section>', {class: 'status-level'}).append($('<p>', {text: 'בהכנה'}));
+    var third_level = $('<section>', {class: 'status-level'}).append($('<p>', {text: level_3}));
+    var fourth_level = $('<section>', {class: 'status-level last-status'}).append($('<p>', {text: level_4}));
+
+    for(var i = 0; i <= status_level; i++){
+        if(i == 0) first_level.toggleClass('status-level-selected');
+        if(i == 1) second_level.toggleClass('status-level-selected');
+        if(i == 2) third_level.toggleClass('status-level-selected');
+        if(i == 3) fourth_level.toggleClass('status-level-selected');
+    }
+
+    status_bar.append(first_level).append(second_level).append(third_level).append(fourth_level);
+    status_container.append(status_bar);
+
+
+    $('.main').append(status_container);
+
+
 }
 
 
