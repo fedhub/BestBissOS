@@ -10,11 +10,16 @@ var socket = io.connect('http://'+base_url,{
 $(document).ready(function(){
 
     get_logo();
+    render_main_page();
 
     $('li').click(function(){
 
         $('.skin section').css('background-color', '#FFA500');
         $('#' + this.id + '-skin').css('background-color', 'green');
+
+        if(this.id == 'main'){
+            render_main_page();
+        }
 
         if(this.id == 'menu'){
             get_the_menu();
@@ -69,6 +74,34 @@ $(document).ready(function(){
 
 });
 
+function render_main_page(){
+
+    $('#main-skin').css('background-color', 'green');
+    $('.main').empty();
+    var main =
+        '<section class="main-container">' +
+            '<section class="suggested-container">' +
+                '<section class="suggested-meal"></section>'+
+                '<section class="suggested-meal"></section>'+
+            '</section>'+
+            '<section class="main-options-container">'+
+                '<section class="main-option-container">' +
+                     '<section class="main-option"></section>'+
+                '</section>'+
+                '<section class="main-option-container">' +
+                    '<section class="main-option"></section>'+
+                '</section>'+
+            '</section>'+
+        '</section>';
+
+    $('.main').append(main);
+
+    $('.suggested-meal').click(function(){
+        alert('hello');
+    });
+
+}
+
 function get_logo(){
 
     $('.logo').css({
@@ -100,7 +133,12 @@ function render_the_menu(res){
     var menu_container = $('<section>', {class: 'menu-container'});
 
     for(var i = 0 in res) {
-        var food_category_container = $('<section>', {class: 'food-category-container'}).click(res[i], event_handler);
+        var food_category_container = $('<section>', {class: 'food-category-container'}).click(res[i], event_handler)
+            .css({
+                'background': 'url("http://'+base_url+res[i].image+'") no-repeat',
+                'background-size': 'contain',
+                'background-position': 'center center'
+            });
         var category_name = $('<p>', {text: res[i].name});
         food_category_container.append(category_name);
         menu_container.append(food_category_container);
