@@ -832,12 +832,10 @@ function make_the_order(){
     if(msg != '')
         alert(msg);
     else {
-        console.log(my_cart.cart_items[0].addition_types[0].items[0].id);
+        var info = {};
+        var url = 'http://'+base_url+'/make-order';
         if(private_customer_logged){
-            var info;
-            var url = '';
             if(payment_method == 'cash'){
-                url = 'http://'+base_url+'/make-order';
                 if(order_type == 'delivery') {
                     update_customer_details();
                     info = get_customer_details(true);
@@ -855,8 +853,16 @@ function make_the_order(){
             }*/
             info.customer_type = 'private';
         }
-       /* if(business_customer_logged) {
-        }*/
+        if(business_customer_logged) {
+            if(order_type == 'delivery') {
+                update_customer_details();
+                info = get_customer_details(true);
+                info.customer_details.budget = customer_details.budget;
+            }
+            else
+                info = get_customer_details(false);
+            info.customer_type = 'business';
+        }
 
         $.ajax({
             type: 'POST',
@@ -882,7 +888,7 @@ function update_customer_details(){
 
 }
 
-function get_customer_details(is_delivery, customer_type){
+function get_customer_details(is_delivery){
 
     var personal_details = {};
     if(is_delivery)
@@ -903,7 +909,15 @@ function get_customer_details(is_delivery, customer_type){
 
 function status_page(){
 
+    var info = {};
+
     $('.main').empty();
+    if(private_customer_logged || business_customer_logged){
+        info = {
+            phone_number: customer_details.phone_number
+        };
+        get_the_status(info);
+    }
     $('.main').append($('<input>', {class: 'status-phone'}));
     $('.main').append($('<section>', {class: 'approve-button', id: 'check-status'}).append($('<p>', {text: 'בדוק'})
         .click(
@@ -912,25 +926,33 @@ function status_page(){
             if(phone_number.length == 0)
                 alert('הזן מספר טלפון');
             else {
-                var url = 'http://'+base_url+'/check-status';
-                var info = {
+                info = {
                     phone_number: phone_number
                 };
-                $.ajax({
-                    type: 'POST',
-                    url: url,
-                    data: {data : JSON.stringify(info)}
-                }).done(function(order_status){
-                    render_status_page(order_status);
-                });
+                get_the_status(info);
             }
         })));
 
 }
 
+function get_the_status(info){
+
+    var url = 'http://'+base_url+'/check-status';
+
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: {data : JSON.stringify(info)}
+    }).done(function(order_status){
+        render_status_page(order_status);
+    });
+
+}
+
 function render_status_page(order_status){
 
-    $('.main').find('.status-container').remove();
+
+    $('.main').empty();
 
     var type = order_status.order_type;
     var status_level = order_status.status_level;
