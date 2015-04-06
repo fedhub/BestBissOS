@@ -1,7 +1,7 @@
 //var base_url = 'best-biss.azurewebsites.net';
-var base_url = 'localhost:3001';
+var base_url = 'http://localhost:3001';
 
-var socket = io.connect('http://'+base_url,{
+var socket = io.connect(base_url,{
     'reconnect': true,
     'reconnection delay': 2000,
     'max reconnection attempts': 10
@@ -81,15 +81,21 @@ function render_main_page(){
     var main =
         '<section class="main-container">' +
             '<section class="suggested-container">' +
-                '<section class="suggested-meal"></section>'+
-                '<section class="suggested-meal"></section>'+
+                '<section class="suggested-meal">'+
+                    '<section class="suggested-image-container"></section>'+
+                    '<section class="suggested-content-container"></section>'+
+                '</section>'+
+                '<section class="suggested-meal">'+
+                    '<section class="suggested-image-container"></section>'+
+                    '<section class="suggested-content-container"></section>'+
+                '</section>'+
             '</section>'+
             '<section class="main-options-container">'+
                 '<section class="main-option-container">' +
-                     '<section class="main-option"></section>'+
+                     '<section class="main-option"><p>בחירה מהזמנות קודמות</p></section>'+
                 '</section>'+
                 '<section class="main-option-container">' +
-                    '<section class="main-option"></section>'+
+                    '<section class="main-option"><p>יצירת הזמנה חדשה</p></section>'+
                 '</section>'+
             '</section>'+
         '</section>';
@@ -105,7 +111,7 @@ function render_main_page(){
 function get_logo(){
 
     $('.logo').css({
-        'background': 'url("http://'+base_url+'/images/mobile_logo.png") no-repeat',
+        'background': 'url("'+base_url+'/images/mobile_logo.png") no-repeat',
         'background-size': 'contain',
         'background-position': 'center center'
     });
@@ -135,7 +141,7 @@ function render_the_menu(res){
     for(var i = 0 in res) {
         var food_category_container = $('<section>', {class: 'food-category-container'}).click(res[i], event_handler)
             .css({
-                'background': 'url("http://'+base_url+res[i].image+'") no-repeat',
+                'background': 'url("'+base_url+res[i].image+'") no-repeat',
                 'background-size': 'contain',
                 'background-position': 'center center'
             });
@@ -873,7 +879,7 @@ function make_the_order(){
         var info = {};
         var url = 'http://'+base_url+'/make-order';
         if(private_customer_logged){
-            if(payment_method == 'cash'){
+            if(payment_method == 'cash' || payment_method == 'credit'){
                 if(order_type == 'delivery') {
                     update_customer_details();
                     info = get_customer_details(true);
@@ -902,6 +908,10 @@ function make_the_order(){
             info.customer_type = 'business';
         }
 
+        if(payment_method == 'credit'){
+            pay_with_credit();
+        }
+
         $.ajax({
             type: 'POST',
             url: url,
@@ -912,6 +922,36 @@ function make_the_order(){
 
     }
 }
+
+
+
+function pay_with_credit(){
+
+    //var url= 'https://secure.cardcom.co.il/external/LowProfileClearing3.aspx?terminalnumber=1000&lowprofilecode=aa-bb-cc';
+
+    var url = 'https://secure.cardcom.co.il/Interface/PerformSimpleCharge.aspx?'+
+        'terminalnumber='+encodeURIComponent('1000')+
+        '&codepage='+encodeURIComponent('65001')+
+        '&username='+encodeURIComponent('kzFKfohEvL6AOF8aMEJz')+
+        '&ChargeInfo.SumToBill='+encodeURIComponent(my_cart.total_price)+
+        '&ChargeInfo.CoinID='+encodeURIComponent('1')+
+        '&ChargeInfo.Language='+encodeURIComponent('he')+
+        '&ChargeInfo.ProductName='+encodeURIComponent('בסטביס')+
+        '&ChargeInfo.APILevel='+encodeURIComponent('9');
+
+    alert(url);
+
+    $.ajax({
+        type: 'POST',
+        url: url
+    }).done(function(res){
+        console.log(res);
+    });
+
+}
+
+
+
 
 function update_customer_details(){
 

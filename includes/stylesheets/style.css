@@ -184,14 +184,12 @@ nav li {
 .main-container {
   width: 100%;
   height: 100%;
-  background-color: yellow;
 }
 
 .suggested-container {
   width: 100%;
   height: 70%;
   text-align: center;
-  background-color: green;
 }
 
 .suggested-meal {
@@ -200,7 +198,19 @@ nav li {
   margin-top: 15px;
   display: inline-block;
   text-align: center;
-  background-color: orange;
+  border: solid 1px #002E02;
+}
+
+.suggested-image-container {
+  height: 50%;
+  width: 100%;
+  background-color: green;
+}
+
+.suggested-content-container {
+  height: 50%;
+  width: 100%;
+  background-color: grey;
 }
 
 .suggested-meal:nth-of-type(1) {
@@ -214,7 +224,6 @@ nav li {
 .main-options-container {
   width: 100%;
   height: 30%;
-  background-color: grey;
 }
 
 .main-option-container {
@@ -226,7 +235,13 @@ nav li {
   width: 92%;
   height: 80%;
   margin: 0 auto;
-  background-color: #111111;
+  border: solid 1px #002E02;
+  display: table;
+}
+.main-option p {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
 }
 
 /*/////////////////////////////////////////////*/
