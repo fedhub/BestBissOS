@@ -292,9 +292,6 @@ nav li {
   vertical-align: middle;
   width: 23%;
   border: solid 1px #006400;
-  background: url("http://best-biss.azurewebsites.net/images/img.png") no-repeat;
-  background-size: contain;
-  background-position: center center;
 }
 .food-item .information {
   display: table-cell;

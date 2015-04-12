@@ -1,5 +1,5 @@
-//var base_url = 'best-biss.azurewebsites.net';
-var base_url = 'http://localhost:3001';
+var base_url = 'http://best-biss.azurewebsites.net';
+//var base_url = 'http://localhost:3001';
 
 var socket = io.connect(base_url,{
     'reconnect': true,
@@ -11,6 +11,10 @@ $(document).ready(function(){
 
     get_logo();
     render_main_page();
+
+    socket.on('credit-success', function(){
+        render_main_page();
+    });
 
     $('li').click(function(){
 
@@ -120,7 +124,7 @@ function get_logo(){
 
 function get_the_menu(){
 
-    var url = 'http://'+base_url+'/get-menu-data';
+    var url = base_url+'/get-menu-data';
 
     $.ajax({
 
@@ -161,7 +165,7 @@ function render_the_menu(res){
 
 function get_menu_items(category_id){
 
-    var url = 'http://'+base_url+'/get-food-items-data&id='+category_id;
+    var url = base_url+'/get-food-items-data&id='+category_id;
 
     $.ajax({
 
@@ -184,7 +188,12 @@ function render_menu_items(food_items_list){
 
         var hr = $('<div>', {class: 'hr'});
         var food_item = $('<section>', {class: 'menu-items-container food-item'}).click(food_items_list[i], render_item_additions);
-        var image = $('<section>', {class: 'menu-items-container image'});
+        var image = $('<section>', {class: 'menu-items-container image'})
+            .css({
+                'background': 'url("'+base_url+food_items_list[i].details.image+'") no-repeat',
+                'background-size': 'contain',
+                'background-position': 'center center'
+            });
         var information = $('<section>', {class: 'menu-items-container information'});
         var title = $('<section>', {class: 'menu-items-container title'});
         var title_p = $('<p>', {text: food_items_list[i].details.name});
@@ -237,7 +246,12 @@ function render_item_additions(e){
 
 
             var item_header = $('<section>', {class: 'item-header'});
-            var item_image = $('<section>', {class: 'item-image'});
+            var item_image = $('<section>', {class: 'item-image'})
+                .css({
+                    'background': 'url("'+base_url+food_item.addition_types[i].items[j].details.image+'") no-repeat',
+                    'background-size': 'contain',
+                    'background-position': 'center center'
+                });
             var information = $('<section>', {class: 'item-header information'});
             var title = $('<section>', {class: 'item-header title'});
             var description = $('<section>', {class: 'item-header description'});
@@ -809,7 +823,7 @@ function set_order_type(type){
 
 function private_login(food_item, arr, login_phone){
 
-    var url = 'http://'+base_url+'/private-user-login&phone_number='+login_phone;
+    var url = base_url+'/private-user-login&phone_number='+login_phone;
 
     $.ajax({
 
@@ -833,7 +847,7 @@ function private_login(food_item, arr, login_phone){
 
 function business_login(food_item, arr, login_phone, company_code){
 
-    var url = 'http://'+base_url+'/business-user-login&phone_number='+login_phone+'&company_code='+company_code;
+    var url = base_url+'/business-user-login&phone_number='+login_phone+'&company_code='+company_code;
 
     $.ajax({
 
@@ -877,7 +891,7 @@ function make_the_order(){
         alert(msg);
     else {
         var info = {};
-        var url = 'http://'+base_url+'/make-order';
+        var url = base_url+'/make-order';
         if(private_customer_logged){
             if(payment_method == 'cash' || payment_method == 'credit'){
                 if(order_type == 'delivery') {
@@ -929,27 +943,32 @@ function pay_with_credit(){
 
     //var url= 'https://secure.cardcom.co.il/external/LowProfileClearing3.aspx?terminalnumber=1000&lowprofilecode=aa-bb-cc';
 
-    var url = 'https://secure.cardcom.co.il/Interface/PerformSimpleCharge.aspx?'+
-        'terminalnumber='+encodeURIComponent('1000')+
-        '&codepage='+encodeURIComponent('65001')+
-        '&username='+encodeURIComponent('kzFKfohEvL6AOF8aMEJz')+
-        '&ChargeInfo.SumToBill='+encodeURIComponent(my_cart.total_price)+
-        '&ChargeInfo.CoinID='+encodeURIComponent('1')+
-        '&ChargeInfo.Language='+encodeURIComponent('he')+
-        '&ChargeInfo.ProductName='+encodeURIComponent('בסטביס')+
-        '&ChargeInfo.APILevel='+encodeURIComponent('9');
+    var url = 'https://secure.cardcom.co.il/Interface/PerformSimpleCharge.aspx';
 
-    alert(url);
+    var data = {
+        'terminalnumber': encodeURIComponent('1000'),
+        'codepage': encodeURIComponent('65001'),
+        'username': encodeURIComponent('card9611'),
+        'ChargeInfo.SumToBill': encodeURIComponent(my_cart.total_price),
+        'ChargeInfo.CoinID': encodeURIComponent('1'),
+        'ChargeInfo.Language': encodeURIComponent('he'),
+        'ChargeInfo.ProductName': encodeURIComponent('בסטביס'),
+        'ChargeInfo.APILevel': encodeURIComponent('9'),
+        'ChargeInfo.SuccessRedirectUrl' : encodeURIComponent('http://best-biss.azurewebsites.net/credit-success-page')
+    };
 
-    $.ajax({
-        type: 'POST',
-        url: url
-    }).done(function(res){
-        console.log(res);
+    $.post(url, data, function(res){
+        var arr = res.split("&");
+        var low_profile_code = arr[2].split("=")[1];
+        redirect_client(low_profile_code);
     });
 
 }
 
+function redirect_client(low_profile_code){
+    var url = 'https://secure.cardcom.co.il/external/LowProfileClearing3.aspx?terminalnumber=1000&lowprofilecode='+low_profile_code;
+    window.location=url;
+}
 
 
 
@@ -1015,7 +1034,7 @@ function status_page(){
 
 function get_the_status(info){
 
-    var url = 'http://'+base_url+'/check-status';
+    var url = base_url+'/check-status';
 
     $.ajax({
         type: 'POST',
