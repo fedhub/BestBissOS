@@ -1,0 +1,66 @@
+/*/////////////////////////////////////////////*/
+					/* MAIN */
+/*/////////////////////////////////////////////*/
+
+.main-container{
+	width: 100%;
+	height: 100%;
+}
+
+.suggested-container{
+	width: 100%;
+	height: 70%;
+	text-align: center;
+}
+
+.suggested-meal{
+	width: 45%;
+	height: 90%;
+	margin-top: 15px;
+	display: inline-block;
+	text-align: center;
+	border: solid 1px $txt-color;
+}
+
+.suggested-image-container{
+	height: 50%;
+	width: 100%;
+	background-color: green;
+}
+
+.suggested-content-container{
+	height: 50%;
+	width: 100%;
+	background-color: grey;
+}
+
+.suggested-meal:nth-of-type(1){
+	margin-left: 1%;
+}
+
+.suggested-meal:nth-of-type(2){
+	margin-right: 1%;
+}
+
+.main-options-container{
+	width: 100%;
+	height: 30%;
+}
+
+.main-option-container{
+	height: 50%;
+	width: 100%;
+}
+
+.main-option{
+	width: 92%;
+	height: 80%;
+	margin: 0 auto;
+	border: solid 1px $txt-color;
+	display: table;
+	p{
+		display: table-cell;
+		vertical-align: middle;
+		text-align: center;
+	}
+}

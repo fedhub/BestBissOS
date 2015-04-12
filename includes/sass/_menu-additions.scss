@@ -1,0 +1,100 @@
+/*/////////////////////////////////////////////*/
+				/* MENU-ADDITIONS */
+/*/////////////////////////////////////////////*/
+
+.menu-additions-container{
+	width: 100%;
+	height: 100%;
+	margin-top: 4px;
+	margin-bottom: 2px;
+}
+
+.set-container {
+
+	width: 100%;
+	margin-bottom: 5px;
+	overflow: hidden;
+
+	.set-title {
+		height: 40px;
+		width: 100%;
+		background-color: $bg-color;
+		margin-bottom: 5px;
+		display: table;
+		p{
+			display: table-cell;
+			vertical-align: middle;
+			text-align: center;
+		}
+	}
+
+	.items-container {
+
+		width: 100%;
+		background-color: orange;
+
+		.addition-item {
+
+			float: right;
+			border: solid 1px $green;
+			height: 100px;
+			width: 23%;
+			margin: 2px 2px;
+
+			.item-header {
+				height: 40%;
+				width: 100%;
+				display: table;
+
+				.information{
+					display: table-cell;
+					width: 75%;
+					height: 100%;
+					.title{
+						width: 100%;
+						height: 30%;
+						display: table;
+						p{
+							display: table-cell;
+							vertical-align: middle;
+							text-align: center;
+							font-size: 50%;
+							font-weight: bold;
+						}
+					}
+					.description{
+						width: 100%;
+						height: 70%;
+						display: table;
+						p{
+							display: table-cell;
+							vertical-align: middle;
+							font-size: 50%;
+						}
+					}
+				}
+
+				.price{
+					display: table-cell;
+					vertical-align: middle;
+					text-align: center;
+					width: 25%;
+					height: 100%;
+					p{
+						font-size: 50%;
+						color: $price-color;
+					}
+				}
+			}
+
+			.item-image {
+				height: 60%;
+				width: 100%;
+				background: url('http://best-biss.azurewebsites.net/images/img.png') no-repeat;
+				background-size: contain;
+				background-position: center center;
+			}
+
+		}
+	}
+}

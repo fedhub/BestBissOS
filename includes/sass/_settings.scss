@@ -2,5 +2,50 @@ $txt-color: #002E02;
 $bg-color: #97A778;
 $price-color: #8b0000;
 $link-color: #1155cc;
+$base_url: 'localhost:3000';
+//$base_url = 'best-biss.azurewebsites.net';
+
+$nav-color: #FFA500;
+$green: #006400;
+
 $bold: bold;
 $auto: 0 auto;
+
+$mobile-menu-width: 75%;
+
+$mobile-transition: all 0.5s ease;
+
+.clear{
+	clear: both;
+}
+
+.approve-button{
+	border-radius: 100px;
+	background-color: $bg-color;
+	display: table;
+	p{
+		display: table-cell;
+		vertical-align: middle;
+		text-align: center;
+		color: $txt-color;
+		font-size: 12px;
+	}
+}
+
+#approve-meal{
+	margin: 10px auto 10px auto;
+	height: 8%;
+	width: 30%;
+}
+
+#approve-cart{
+	float: left;
+	height: 80%;
+	width: 30%;
+}
+
+#approve-due-time, #approve-login, #approve-budget, #approve-delivery-details, #check-status{
+	margin: 10px auto;
+	height: 30px;
+	width: 100px;
+}
