@@ -1,5 +1,5 @@
-var base_url = 'http://best-biss.azurewebsites.net';
-//var base_url = 'http://localhost:3001';
+var base_url = 'https://www.best-biss.com';
+//var base_url = 'http://localhost:3000';
 
 var socket = io.connect(base_url,{
     'reconnect': true,
@@ -952,9 +952,9 @@ function pay_with_credit(){
         'ChargeInfo.SumToBill': encodeURIComponent(my_cart.total_price),
         'ChargeInfo.CoinID': encodeURIComponent('1'),
         'ChargeInfo.Language': encodeURIComponent('he'),
-        'ChargeInfo.ProductName': encodeURIComponent('בסטביס'),
+        'ChargeInfo.ProductName': encodeURIComponent("בסט ביס"),
         'ChargeInfo.APILevel': encodeURIComponent('9'),
-        'ChargeInfo.SuccessRedirectUrl' : encodeURIComponent('http://best-biss.azurewebsites.net/credit-success-page')
+       'ChargeInfo.SuccessRedirectUrl': "http://best-biss.azurewebsites.net//credit-success-page"
     };
 
     $.post(url, data, function(res){
