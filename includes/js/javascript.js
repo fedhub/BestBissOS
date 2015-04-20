@@ -1,5 +1,5 @@
-//var base_url = 'https://www.best-biss.com';
-var base_url = 'http://localhost:3000';
+var base_url = 'https://www.best-biss.com';
+//var base_url = 'http://localhost:3000';
 
 var socket = io.connect(base_url,{
     'reconnect': true,
@@ -954,8 +954,8 @@ function pay_with_credit(){
         'ChargeInfo.CoinID': encodeURIComponent('1'),
         'ChargeInfo.Language': encodeURIComponent('he'),
         'ChargeInfo.ProductName': encodeURIComponent("בסט ביס"),
-        'ChargeInfo.APILevel': encodeURIComponent('9')
-       //'ChargeInfo.SuccessRedirectUrl': "http://best-biss.azurewebsites.net//credit-success-page"
+        'ChargeInfo.APILevel': encodeURIComponent('9'),
+        'ChargeInfo.SuccessRedirectUrl': "https://www.best-biss.com/payment-success"
     };
 
     $.post(url, data, function(res){
@@ -968,23 +968,10 @@ function pay_with_credit(){
 
 function redirect_client(low_profile_code) {
 
-    var cardcom_url = "https://secure.cardcom.co.il/external/LowProfileClearing3.aspx?terminalnumber=1000&lowprofilecode=" + low_profile_code;
-    var url = "http://localhost:3000/credit-payment&url="+encodeURIComponent(cardcom_url)+"&id="+encodeURIComponent(socket.id);
+    var terminalnumber = "1000";
+    var lowprofilecode = low_profile_code;
 
-    window.location = url;
-
-    /*var data = {
-        'cardcom_url': encodeURIComponent(cardcom_url),
-        'socket_id': encodeURIComponent(socket.id)
-    };*/
-
-    /*$.ajax({
-     type: 'POST',
-     url: url,
-     data: {data: JSON.stringify(data)}
-     }).done(function (res) {
-     console.log(res);
-     });*/
+    window.location = "https://www.best-biss.com/credit-payment&terminalnumber="+encodeURIComponent(terminalnumber)+"&lowprofilecode="+encodeURIComponent(lowprofilecode);
 
 }
 
